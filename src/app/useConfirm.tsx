@@ -15,7 +15,7 @@ import { useState } from "react";
 export const useConfirm = () => {
   const [isOpen, setOpen] = useState(false);
   const [resolver, setResolver] = useState<{
-    resolve: null | ((value: boolean | PromiseLike<boolean>) => void);
+    resolve: null | ((value: boolean) => void);
   }>({
     resolve: null,
   });
