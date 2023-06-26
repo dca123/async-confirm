@@ -14,28 +14,26 @@ import { useState } from "react";
 
 export const useConfirm = () => {
   const [isOpen, setOpen] = useState(false);
-  const [resolver, setResolver] = useState<{
-    resolve: null | ((value: boolean) => void);
-  }>({
-    resolve: null,
-  });
+  const [resolver, setResolver] = useState<null | ((value: boolean) => void)>(
+    null
+  );
 
   const getConfirmation = () => {
     setOpen(true);
-    const promise = new Promise<boolean>((resolver) =>
-      setResolver({ resolve: resolver })
-    );
+    const promise = new Promise<boolean>((r) => {
+      setResolver(() => r);
+    });
     return promise;
   };
 
   const onClick = (value: boolean) => {
     setOpen(false);
-    if (resolver.resolve === null) {
+    if (resolver === null) {
       throw new Error(
         "Resolver hasn't been set ! This is caused when you don't call getConfirmation() before calling onClick()"
       );
     }
-    resolver.resolve(value);
+    resolver(value);
   };
 
   const handleConfirm = () => onClick(true);
