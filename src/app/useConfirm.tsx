@@ -10,30 +10,28 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export const useConfirm = () => {
   const [isOpen, setOpen] = useState(false);
-  const [resolver, setResolver] = useState<null | ((value: boolean) => void)>(
-    null
-  );
+  const resolver = useRef<null | ((value: boolean) => void)>(null);
 
   const getConfirmation = () => {
     setOpen(true);
     const promise = new Promise<boolean>((r) => {
-      setResolver(() => r);
+      resolver.current = r;
     });
     return promise;
   };
 
   const onClick = (value: boolean) => {
     setOpen(false);
-    if (resolver === null) {
+    if (resolver.current === null) {
       throw new Error(
-        "Resolver hasn't been set ! This is caused when you don't call getConfirmation() before calling onClick()"
+        "Resolver hasn't been set ! This is caused when you call onClick() before calling getConfirmation()"
       );
     }
-    resolver(value);
+    resolver.current(value);
   };
 
   const handleConfirm = () => onClick(true);
